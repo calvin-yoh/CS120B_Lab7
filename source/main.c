@@ -124,6 +124,7 @@ void Tick() {
 	default:
 		break;
 	}
+	LCD_Cursor(1);
 	LCD_WriteData(tempB + '0');
 }
 
