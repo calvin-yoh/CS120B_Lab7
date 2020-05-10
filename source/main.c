@@ -2,7 +2,7 @@
  *  Partner(s) Name:
  *	Lab Section:
  *	Assignment: Lab #  Exercise #
- *	Exercise Description: [optional - Increaselude for your own benefit]
+ *
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -16,9 +16,11 @@
 #include "io.h"
 #endif	
 
-enum States { Start, Begin, Increase, Decrease, Wait, Reset }state;
+enum States { Start, Begin, Increase, Decrease, WaitInc, WaitDec, Reset }state;
 unsigned char tempB = 0x00;
 unsigned char tempA = 0x00;
+int increaseTimer = 0;
+int decreaseTimer = 0;
 
 void Tick() {
 	tempA = ~PINA;
@@ -50,15 +52,45 @@ void Tick() {
 			break;
 		}
 	case Increase:
-		state = Wait;
+		increaseTimer = 0;
+		state = WaitInc;
 		break;
 	case Decrease:
-		state = Wait;
+		decreaseTimer = 0;
+		state = WaitDec;
 		break;
-	case Wait:
-		if ((tempA == 0x01) || (tempA == 0x02))
+	case WaitInc:
+		if (increaseTimer >= 10)
 		{
-			state = Wait;
+			state = Increase;
+			break;
+		}
+		else if (tempA == 0x01)
+		{
+			increaseTimer++;
+			state = WaitInc;
+			break;
+		}
+		else if (tempA == 0x03)
+		{
+			state = Reset;
+			break;
+		}
+		else
+		{
+			state = Begin;
+			break;
+		}
+	case WaitDec:
+		if (decreaseTimer >= 10)
+		{
+			state = Decrease;
+			break;
+		}
+		else if (tempA == 0x02)
+		{
+			decreaseTimer++;
+			state = WaitDec;
 			break;
 		}
 		else if (tempA == 0x03)
@@ -114,8 +146,6 @@ void Tick() {
 			break;
 		}
 	}
-	case Wait:
-		break;
 	case Reset:
 	{
 		tempB = 0x00;
@@ -124,6 +154,7 @@ void Tick() {
 	default:
 		break;
 	}
+
 	LCD_Cursor(1);
 	LCD_WriteData(tempB + '0');
 }
