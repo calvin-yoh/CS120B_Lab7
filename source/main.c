@@ -159,11 +159,29 @@ void Tick()
 	{
 		if (tempB == 0x02)
 		{
-			currScore++;
+			if(currScore >= 0x09)
+			{
+				currScore = 0x09;
+				break;
+			}
+			else
+			{
+			currScore = currScore + 0x01;
+			break;
+			}
 		}
 		else
 		{
-			currScore--;
+			if (currScore <= 0x00)
+			{
+				currScore = 0x00;
+				break;
+			}
+			else
+			{
+				currScore = currScore - 0x01;
+				break;
+			}
 		}
 	}
 	default:
@@ -171,5 +189,5 @@ void Tick()
 	}
 	PORTB = tempB;
 	LCD_Cursor(1);
-	LCD_WriteData(tempB + '0');
+	LCD_WriteData(currScore + '0');
 }
