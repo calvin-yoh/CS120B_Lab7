@@ -189,5 +189,12 @@ void Tick()
 	}
 	PORTB = tempB;
 	LCD_Cursor(1);
-	LCD_WriteData(currScore + '0');
+	if (currScore == 0x09)
+	{
+		LCD_DisplayString(1, "WINNER!!");
+	}
+	else
+	{
+		LCD_WriteData(currScore + '0');
+	}
 }
